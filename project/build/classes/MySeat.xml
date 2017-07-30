@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="myseatns">
+	<resultMap id="myseatResult" type="myseat">
+		<result property="seatnum" column="seatnum" />
+		<result property="id" column="id" />
+		<result property="seatIn" column="seatIn" />
+		<result property="seatOut" column="seatOut" />
+	</resultMap>
+	<select id="list" parameterType="String" resultMap="myseatResult">
+		select * from (select a.*, rownum rn
+		   from (select * from myseat where id =#{id} order by seatIn desc) a)
+		    where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="myseatgetTotal" parameterType="String" resultType="int">
+		select count(*) from myseat where id=#{id}
+	</select>
+	<update id="seatupdate" parameterType="Myseat">
+		update Myseat set seatout = sysdate where seatnum=#{seatnum} and id=#{id} and seatOut is null
+	</update>
+	<select id="listseatcheck" parameterType="int" resultMap="myseatResult">
+		select * from myseat where seatnum=#{seatnum}
+	</select>
+	<update id="mycheckout" parameterType="hashMap">
+		update Myseat set seatout = sysdate where seatnum=#{seatnum} and id=#{id} and seatout is null
+	</update>	
+	<insert id="checkIn" parameterType="hashmap">insert into Myseat values(#{seatnum},#{id},sysdate,null)</insert> 
+  <update id="checkOut" parameterType="hashmap">update myseat set seatout=sysdate where seatnum=#{seatnum} and id=#{id} and seatout is null</update> 
+	
+</mapper>

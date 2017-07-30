@@ -1,0 +1,40 @@
+@CHARSET "UTF-8";
+
+.wrapper {
+	display: table;
+	padding-left: 30px;
+	width: 80%;
+	table-layout: fixed;
+
+}
+
+.wrapperadmin {
+	display: table;
+	padding-left: 30px;
+	
+	width: 80%;
+	table-layout: fixed;
+
+}
+
+
+.wrapperjoin {
+	display: table;
+	width: 70%;
+	table-layout: fixed;
+	padding-left: 200px;
+}
+
+#content {
+	width: 1203px;
+}
+
+html, body {
+	padding-right: 30px;
+	padding-left: 10px;
+	padding-bottom: 15px;
+}
+
+table{border:1px solid balck;}
+
+table th{}

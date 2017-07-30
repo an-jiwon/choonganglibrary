@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bookns">
+	<resultMap type="book" id="bookResult">
+		<result property="book_id" column="book_id"/>	
+		<result property="category" column="category"/>
+		<result property="title" column="title"/>
+		<result property="author" column="author"/>
+		<result property="company" column="company"/>
+		<result property="book_public" column="bookpublic"/>
+		<result property="area" column="area"/>
+		<result property="giho" column="giho"/>
+		<result property="state" column="state"/>
+		<result property="book_index" column="book_index"/>
+		<result property="image" column="image"/>
+	</resultMap>
+
+	<select id="list" parameterType="hashMap" resultMap="bookResult">
+	select * from (select a.*, rownum rn
+		from (select * from book where category=#{category} and (title like '%'||#{searchKeyword}||'%' or author like '%'||#{searchKeyword}||'%')) a)
+		where rn between #{startRow} and #{endRow} 
+	</select>
+	
+	<select id="list2" parameterType="hashMap" resultMap="bookResult">
+		select * from (select a.*, rownum rn
+		from (select * from book where (title like '%'||#{searchKeyword}||'%' or author like '%'||#{searchKeyword}||'%') order by book_id) a)
+		where rn between #{startRow} and #{endRow}
+	</select>
+
+	<select id="getTotal" resultType="int">
+		select count(*) from book where category=#{category} and (title like '%'||#{searchKeyword}||'%' or author like '%'||#{searchKeyword}||'%') 
+	</select> 
+	
+	<select id="getTotal2" resultType="int">
+		select count(*) from book where (title like '%'||#{searchKeyword}||'%' or author like '%'||#{searchKeyword}||'%') 
+	</select> 
+	
+	<select id="select" parameterType="int" resultType="book" >
+		select * from book where book_id=#{book_id}
+	</select>
+	
+	<update id="modify" parameterType="book">
+		update book set (state)=('n') where book_id=#{book_id}
+	</update>
+	
+	<update id="modify2" parameterType="int">
+		update book set (state)=('y') where book_id=#{book_id}
+	</update>
+	
+	<insert id="insert" parameterType="book">
+		<selectKey keyProperty="book_id" order="BEFORE" resultType="int">
+			select nvl(max(book_id),0)+1 book_id from book
+		</selectKey>
+		insert into book values
+		(#{book_id},#{title},#{category},
+		#{company},#{author},#{book_public},#{area},#{giho},'y',#{book_index},#{image, jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="listadmin" parameterType="string" resultMap="bookResult">
+		select * from (select a.*, rownum rn from 
+		(select * from book order by book_id desc) a) 
+		where rn between #{startRow} and #{endRow}
+	</select> 
+	
+	<select id="listsearch" parameterType="string" resultMap="bookResult">
+		select * from (select a.*, rownum rn
+		   from (select * from book 
+		   where (title like '%'||#{titlemin}||'%' or author like '%'||#{titlemin}||'%') 
+		   and category=#{category} order by book_id desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="listsearch2" parameterType="string" resultMap="bookResult">
+		select * from (select a.*, rownum rn
+		   from (select * from book 
+		   where (title like '%'||#{titlemin}||'%' or author like '%'||#{titlemin}||'%') 
+		   order by book_id desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>	
+	<select id="bookgetTotal" resultType="int">
+		select count(*) from book
+	</select>
+	<select id="bookgetTotalsearch" parameterType="String" resultType="int">
+		select count(*) from book where title like '%'||#{titlemin}||'%' or author like '%'||#{titlemin}||'%'
+	</select>
+	<select id="bookgetTotalsearch2" parameterType="string" resultType="int">
+		select count(*) from book where title like '%'||#{titlemin}||'%' or author like '%'||#{titlemin}||'%' 
+		   and category=#{category}
+	</select>
+
+	<update id="update" parameterType="book">
+		update book set title=#{title},category=#{category},
+			company=#{company}, author=#{author}, book_public=#{book_public}, area=#{area},
+			giho=#{giho}, book_index=#{book_index},image=#{image, jdbcType=VARCHAR} where book_id=#{book_id}
+	</update>
+	<delete id="delete" parameterType="int">
+		delete book where book_id=#{book_id}	
+	</delete>
+</mapper>

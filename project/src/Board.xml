@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardns">
+	<resultMap id="boardResult" 		type="board">
+		    <result property="num" 		column="num"/>
+		    <result property="category" 	column="category"/>
+		    <result property="title" 	column="title"/>
+		    <result property="writer" 	column="writer"/>
+		    <result property="board_main" 	column="board_main"/>
+		    <result property="board_file" 	column="board_file"/>
+		    <result property="board_date" 	column="board_date"/>
+		    <result property="board_view" 	column="board_view"/>
+	  </resultMap>
+	<select id="list1" parameterType="hashMap" resultMap="boardResult">
+		select * from (select a.*, rownum rn
+		   from (select * from board where category=#{category} order by board_date desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="list2" parameterType="hashMap" resultMap="boardResult">
+		select * from (select a.*, rownum rn
+		   from (select * from board where category != 'notice' order by board_date desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="search" parameterType="hashMap" resultMap="boardResult">
+		select * from (select a.*, rownum rn
+		   from (select * from board where category != 'notice' and title like '%'||#{keyword}||'%' order by board_date desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="search2" parameterType="hashMap" resultMap="boardResult">
+		select * from (select a.*, rownum rn
+		   from (select * from board where category = 'notice' and title like '%'||#{keyword}||'%' order by board_date desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="getTotal1" parameterType="String" resultType="int">
+		select count(*) from board where category='notice'
+	</select>
+	<select id="getTotal2" resultType="int">
+		select count(*) from board where category != 'notice'
+	</select>
+	<select id="getTotal3" parameterType="String" resultType="int">
+		select count(*) from board where category = 'notice' and title like '%'||#{keyword}||'%'
+	</select>
+	<select id="getTotal4" parameterType="String" resultType="int">
+		select count(*) from board where category != 'notice' and title like '%'||#{keyword}||'%'
+	</select>
+	<select id="select" parameterType="int" resultType="board">
+	select * from board where num=#{num}
+	</select>
+	<select id="view" parameterType="int" resultType="int">
+	update board set board_view = board_view+1 where num=#{num}
+	</select>
+	<select id="getNum" resultType="int">
+	select nvl(max(num),0) + 1 from board
+	</select>
+	
+	<insert id="insert" parameterType="board">
+		insert into board values (#{num},#{category},
+			#{title},#{writer},#{board_main},#{board_file, jdbcType=VARCHAR},sysdate,0)
+	</insert>
+	<update id="update" parameterType="board">
+	update board set title=#{title},category=#{category},board_main=#{board_main},board_file=#{board_file, jdbcType=VARCHAR}
+	where num=#{num}
+	</update>
+	<delete id="delete" parameterType="int">
+	delete from board where num=#{num}
+	</delete>
+	<select id="download" parameterType="int" resultMap="boardResult">
+	select * from board where num=#{num}
+	</select>
+	
+	<update id="updateNotice" parameterType="board">
+	update board set title=#{title},board_main=#{board_main},board_file=#{board_file, jdbcType=VARCHAR}
+	where num=#{num}
+	</update>
+
+	<select id="mylist" parameterType="hashMap" resultMap="boardResult">
+		select * from (select a.*, rownum rn
+		   from (select * from board where category != 'notice' and writer=#{id} order by board_date desc) a)
+		   where rn between #{startRow} and #{endRow}
+	</select>
+	<select id="getTotal0" parameterType="String" resultType="int">
+		select count(*) from board where writer=#{id}
+	</select>
+
+</mapper>

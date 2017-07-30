@@ -1,0 +1,20 @@
+@CHARSET "UTF-8";
+	
+		html, body {
+		height: 100%;
+	}
+	.leftbar {background-color : #d8df8f; width:170px; height:600px; float: left; display: inline-block; }
+	.bartitle { margin-top : 30px ; margin-left: 20px; font-size: 15px; font-weight: bolder;}
+	.bartitle ul {padding-left: 16px;}
+	.bartitle li {line-height: 28px; font-size: 14px; font-weight: normal;}
+	article {width:80%; padding-left:185px;}
+	li {list-style: none; }
+	a:link {color: #010933;}
+	a:visited {color: #010933;}
+	a:hover {color: #010933; font-weight: bold;}
+	a:active {color: #010933; font-weight: bold;}
+	a {text-decoration: none;}
+	.click {font-weight: bold;}
+	fieldset {
+		width: 1000px;
+	}

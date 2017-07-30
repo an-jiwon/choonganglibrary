@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="replyns">
+	<resultMap id="replyResult" 		type="reply">
+		    <result property="num" 		column="num"/>
+		    <result property="reply_num" 	column="reply_num"/>
+		    <result property="main" 	column="main"/>
+		    <result property="reply_date" 	column="reply_date"/>
+		    <result property="reply_update" 	column="reply_update"/>
+		    <result property="hide" 	column="hide"/>
+		    <result property="writer" 	column="writer"/>
+		    
+	  </resultMap>
+
+	<select id="select" parameterType="int" resultMap="replyResult">
+	select * from reply where num=#{num} order by reply_num
+	</select>
+	
+	<select id="getReNum" parameterType="int" resultType="int">
+	select nvl(max(reply_num),0) + 1 from reply where num=#{num}
+	</select>
+	
+	<insert id="insert" parameterType="reply">
+	insert into reply values(#{num},#{reply_num},#{main},sysdate,sysdate,'n',#{writer})
+	</insert>
+	
+	<update id="update" parameterType="reply">
+	update reply set main=#{main}, reply_update=sysdate where num=#{num} and reply_num=#{reply_num}
+	</update>
+	
+	<delete id="delete" parameterType="hashMap">
+	delete from reply where num=#{num} and reply_num=#{reply_num}
+	</delete>
+	
+	<delete id="deleteBoard" parameterType="int">
+	delete from reply where num=#{num}
+	</delete>
+	
+
+
+</mapper>

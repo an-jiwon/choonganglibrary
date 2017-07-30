@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="nrboardns">
+	<resultMap type="nrboard" id="nrboardResult">
+		<result property="num" column="num"/>
+		<result property="category" column="category"/>
+		<result property="title" column="title"/>
+		<result property="writer" column="writer"/>
+		<result property="main" column="main"/>
+		<result property="NRBoard_file" column="NRBoard_file"/>
+		<result property="nr_date" column="nr_date"/>
+		<result property="nr_view" column="nr_view"/>
+	</resultMap>
+	
+	<select id="getNum" resultType="int">
+		select nvl(max(num),0) + 1 from NRBoard
+	</select>
+	
+	<insert id="insert" parameterType="nrboard">
+		insert into NRBoard values(#{num},#{category},#{title},#{writer},#{main},#{NRBoard_file, jdbcType=VARCHAR},sysdate,0)
+	</insert>
+	
+	<select id="getTotal" resultType="int">
+		select count(*) from NRBoard
+	</select>
+	
+	<select id="list" parameterType="hashMap" resultMap="nrboardResult">
+		select * from (select a.*, rownum rn 
+		from (select * from NRBoard order by num desc) a)
+		where rn between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="readcount" parameterType="int" resultType="int">
+		update NRBoard set nr_view=nr_view+1 where num=#{num}
+	</select>
+	
+	<select id="view" parameterType="int" resultMap="nrboardResult">
+		select * from NRBoard where num=#{num}
+	</select>
+	
+	<delete id="delete" parameterType="int" >
+		delete from NRBoard where num=#{num}
+	</delete>
+	
+	<update id="modify" parameterType="nrboard">
+		update NRBoard set title=#{title}, category=#{category}, NRBoard_file=#{NRBoard_file, jdbcType=VARCHAR}, main=#{main} where num=#{num}
+	</update>
+
+	<select id="download" parameterType="int" resultMap="nrboardResult">
+	select * from nrboard where num=#{num}
+	</select>
+</mapper>

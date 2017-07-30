@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reservens">
+	<resultMap type="reserve" id="reserveResult">
+		<result property="book_id" column="book_id"/>
+		<result property="id" column="id"/>
+		<result property="reserve_ok" column="reserve_ok"/>
+		<result property="reserve_date" column="reserve_date"/>
+	</resultMap>	
+	
+	<resultMap id="bookResult" type="book">
+		<result property="book_id" column="book_id" />
+		<result property="title" column="title" />
+		<result property="category" column="category" />
+		<result property="author" column="author" />
+		<result property="company" column="company" />
+		<result property="book_public" column="book_public" />
+		<result property="area" column="area" />
+		<result property="giho" column="giho" />
+		<result property="book_index" column="book_index" />
+		<result property="image" column="image"/>
+		<result property="titlemin" column="titlemin"/>
+	</resultMap>
+	<select id="list" parameterType="hashMap" resultMap="reserveResult">
+		select book.title, over.* from book,(select a.*, rownum rn
+		   from (select * from reserve order by reserve_date desc) a) over
+		   where id =#{id} and rn between #{startRow} and #{endRow} and book.book_id = over.book_id
+	</select>
+	<select id="reservegetTotal" resultType="int">
+		select count(*) from reserve where id = #{id}
+	</select>
+
+	<insert id="insert" parameterType="reserve">
+		insert into reserve values(#{book_id},#{id},'예약중',sysdate)
+	</insert>
+
+	<select id="select" parameterType="int" resultMap="reserveResult">
+		select * from reserve where book_id=#{book_id}
+	</select>
+	<delete id="cancel" parameterType="reserve">
+		delete reserve where id=#{id} and book_id=#{book_id} and reserve_ok='예약중'
+	</delete>
+	
+	
+
+</mapper>

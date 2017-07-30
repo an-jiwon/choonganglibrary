@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/decorators">
+	<decorator name="main" page="decorators.jsp">
+		<pattern>/board/*</pattern>
+		<pattern>/bookboard/*</pattern>
+		<pattern>/bookinfo/*</pattern>
+		<pattern>/guide/*</pattern>
+		<pattern>/member/*</pattern>
+		<pattern>/mypage/*</pattern>
+		<pattern>/search/*</pattern>
+		<pattern>/main/*</pattern>
+	</decorator>
+	<decorator name="admin" page="decorators_admin.jsp">
+		<pattern>/adminpage/*</pattern>
+	</decorator>
+	<excludes>
+		<pattern>/member/confirm.*</pattern>
+	</excludes>
+</decorators>
+
+

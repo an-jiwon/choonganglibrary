@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="checkns">
+	<resultMap type="checkOut" id="checkoutResult">
+		<result property="book_id" column="book_id"/>
+		<result property="id" column="id"/>
+		<result property="checkout_date" column="checkout_date"/>
+		<result property="checkin_date" column="checkin_date"/>
+		<result property="check_ok" column="check_ok"/>		
+	</resultMap>
+	<resultMap id="bookResult" type="book">
+		<result property="book_id" column="book_id" />
+		<result property="title" column="title" />
+		<result property="category" column="category" />
+		<result property="author" column="author" />
+		<result property="company" column="company" />
+		<result property="book_public" column="book_public" />
+		<result property="area" column="area" />
+		<result property="giho" column="giho" />
+		<result property="book_index" column="book_index" />
+		<result property="image" column="image"/>
+		<result property="titlemin" column="titlemin"/>
+		
+	</resultMap>
+	<select id="list" parameterType="string" resultMap="checkoutResult">
+		select book.title, (nvl(over.checkin_date,sysdate)-over.checkout_date)-14 overdate, id, over.* from book,(select a.*, rownum rn
+		   from (select * from checkout where id =#{id} order by checkout_date desc) a) over
+		   where rn between #{startRow} and #{endRow} and book.book_id = over.book_id
+	</select>
+	<select id="checkoutgetTotal" parameterType="String" resultType="int">
+		select count(*) from checkout where id=#{id}
+	</select>
+	<select id="checkoutgetTotalid" resultType="int">
+		select count(*) from checkout where id=#{id} and (nvl(checkin_date,sysdate)-checkout_date) > 14 
+	</select>
+	
+	<select id="mycheckgetTotal" resultType="int">
+		select count(*) from checkout where id=#{id}
+	</select>
+	<select id="checkoutgetTotalall" resultType="int">
+		select count(*) from checkout where check_ok='대출중'
+	</select>
+	<select id="over" parameterType="hashMap" resultMap="checkoutResult">
+		select book.title, (nvl(over.checkin_date,sysdate)-over.checkout_date)-14 overdate, id, over.* from book,(select a.*, rownum rn
+		   from (select * from checkout where id =#{id} and (nvl(checkin_date,sysdate)-checkout_date) > 14 order by checkout_date desc) a) over
+		   where rn between #{startRow} and #{endRow} and book.book_id = over.book_id
+	</select>
+	<select id="overadmin" parameterType="hashMap" resultMap="checkoutResult">
+		select book.title, (nvl(over.checkin_date,sysdate)-over.checkout_date)-14 overdate, id, over.book_id,over.check_ok, over.checkout_date, over.checkin_date from book,(select  a.*, rownum rn
+		   from (select * from checkout where (nvl(checkin_date,sysdate)-checkout_date) > 14 and check_ok='대출중' order by checkout_date desc) a) over
+		   where rn between #{startRow} and #{endRow} and book.book_id = over.book_id
+	</select>
+	
+
+	<insert id="insert" parameterType="checkout">
+		insert into checkOut values(#{book_id},#{id},sysdate,sysdate+14,'대출중') 
+	</insert>
+	
+	<select id="select" parameterType="int" resultMap="checkoutResult">
+		select  a.*
+		   from (select * from checkout where book_id=#{book_id} order by checkout_date desc) a where rownum=1
+	</select>
+
+	<update id="update" parameterType="int">
+		update checkOut set check_ok='반납',checkin_date=sysdate where book_id=#{book_id}
+	</update>
+
+</mapper>
